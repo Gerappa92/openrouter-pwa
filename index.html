@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>OpenRouter POC</title>
+    <meta name="theme-color" content="#2563eb" />
+    <meta name="description" content="POC PWA testująca komunikację z OpenRouter z tabletu." />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icons/icon-192.png" />
+    <link rel="apple-touch-icon" href="./icons/icon-192.png" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="card">
+      <h1>Przemyślenia AI</h1>
+      <p class="subtitle">POC komunikacji PWA z OpenRouter.</p>
+
+      <!-- Stan 1: brak klucza -->
+      <section id="screen-key" class="screen" hidden>
+        <label class="field-label" for="key-input">Klucz API OpenRouter</label>
+        <div class="field-key">
+          <input
+            id="key-input"
+            type="password"
+            inputmode="text"
+            autocomplete="off"
+            autocapitalize="off"
+            spellcheck="false"
+            placeholder="sk-or-..."
+          />
+          <button id="key-toggle" class="btn-ghost" type="button" aria-label="Pokaż klucz">👁</button>
+        </div>
+        <button id="key-save" class="btn-primary-wide" type="button">Zapisz klucz</button>
+        <p class="hint">
+          Klucz zapisujemy lokalnie na tym urządzeniu i wysyłamy tylko do OpenRouter.
+        </p>
+      </section>
+
+      <!-- Stan 2: wybór modelu -->
+      <section id="screen-model" class="screen" hidden>
+        <label class="field-label">Wybierz darmowy model</label>
+        <div id="model-list" class="model-list" role="radiogroup" aria-label="Darmowe modele">
+          <p class="hint">Wczytywanie modeli…</p>
+        </div>
+        <p class="hint" id="model-hint"></p>
+      </section>
+
+      <!-- Stan 3: wynik -->
+      <section id="screen-result" class="screen" hidden>
+        <div class="result-meta">
+          <span id="result-model" class="badge"></span>
+        </div>
+        <div id="result-body" class="result-body" aria-live="polite"></div>
+        <div class="actions">
+          <button id="again" class="btn-secondary" type="button">Jeszcze raz</button>
+          <button id="change" class="btn-primary-wide" type="button">Zmień model</button>
+        </div>
+      </section>
+
+      <p id="status" class="status" role="status"></p>
+    </main>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
