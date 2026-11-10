@@ -129,6 +129,18 @@ async function loadModels() {
 
 /* ---------- stan 3: wynik ---------- */
 
+async function readErrorMessage(res) {
+  const text = await res.text().catch(() => "");
+  try {
+    const parsed = JSON.parse(text);
+    const message = parsed?.error?.message;
+    const raw = parsed?.error?.metadata?.raw;
+    return [message, typeof raw === "string" ? raw : ""].filter(Boolean).join(" — ").slice(0, 300);
+  } catch {
+    return text.slice(0, 300) || res.statusText || "brak szczegółów";
+  }
+}
+
 function renderResultScreen(model) {
   show(screenResult);
   resultModel.textContent = modelLabel(model);
@@ -156,21 +168,21 @@ async function generate() {
       }),
     });
 
-    if (res.status === 401 || res.status === 403) {
+    if (res.status === 401) {
       localStorage.removeItem(KEY_STORAGE);
       renderKeyScreen("Nieprawidłowy klucz API. Wprowadź go ponownie.");
       return;
     }
 
-    if (res.status === 429) {
-      setStatus("Limit darmowych modeli osiągnięty (50/dzień).", true);
-      loadModels();
-      return;
-    }
-
     if (!res.ok) {
-      const text = await res.text().catch(() => "");
-      throw new Error(`HTTP ${res.status}${text ? ` — ${text.slice(0, 200)}` : ""}`);
+      const detail = await readErrorMessage(res);
+      resultBody.innerHTML = "";
+      const hint =
+        res.status === 429
+          ? "Limit darmowych modeli (np. 50/dzień) lub model jest przeciążony."
+          : "Ten model może być niedostępny dla Twojego konta lub aplikacji.";
+      setStatus(`Błąd ${res.status}: ${detail}. ${hint} Spróbuj innego modelu.`, true);
+      return;
     }
 
     const data = await res.json();
